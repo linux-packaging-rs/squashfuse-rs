@@ -1,6 +1,6 @@
 [package]
 name = "squashfuse-rs"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = [ "Ryan Brue <ryanbrue@gmail.com>" ]
 repository = "https://github.com/linux-packaging-rs/squashfuse-rs"
