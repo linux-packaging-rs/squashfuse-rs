@@ -4,9 +4,7 @@ use std::{
     time::{Duration, UNIX_EPOCH},
 };
 
-use backhand::{
-    InnerNode, Node, SquashfsFileReader,
-};
+use backhand::{InnerNode, Node, SquashfsFileReader};
 use fuser::{ReplyAttr, Request};
 use thiserror::Error;
 
@@ -20,11 +18,15 @@ pub enum SquashFuseError {
 
 pub struct SquashfsFilesystem<'a> {
     archive: backhand::FilesystemReader<'a>,
+    verbose: bool,
 }
 
 impl<'a> SquashfsFilesystem<'a> {
-    pub fn new(archive: backhand::FilesystemReader<'a>) -> Self {
-        Self { archive }
+    pub fn new(archive: backhand::FilesystemReader<'a>, verbose: bool) -> Self {
+        if verbose {
+            println!("SquashfsFilesystem::verbose enabled");
+        }
+        Self { archive, verbose }
     }
 
     fn node_from_ino(&self, ino: usize) -> Option<Node<SquashfsFileReader>> {
@@ -46,6 +48,9 @@ impl<'a> SquashfsFilesystem<'a> {
 
 impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
     fn getattr(&mut self, _req: &Request<'_>, ino: u64, reply: ReplyAttr) {
+        if self.verbose {
+            println!("SquashfsFilesystem::getattr()");
+        }
         match self.node_from_ino(ino as usize) {
             Some(node) => {
                 match node.inner {
@@ -78,6 +83,9 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
         }
     }
     fn open(&mut self, _req: &Request<'_>, ino: u64, _flags: i32, reply: fuser::ReplyOpen) {
+        if self.verbose {
+            println!("SquashfsFilesystem::open()");
+        }
         if let Some(node) = self.node_from_ino(ino as usize) {
             if let InnerNode::File(_) = node.inner {
                 reply.opened(0, 0)
@@ -99,6 +107,9 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
         _lock_owner: Option<u64>,
         reply: fuser::ReplyData,
     ) {
+        if self.verbose {
+            println!("SquashfsFilesystem::read()");
+        }
         match self.node_from_ino(ino as usize) {
             Some(node) => match node.inner {
                 InnerNode::File(file) => {
@@ -116,6 +127,9 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
         }
     }
     fn opendir(&mut self, _req: &Request<'_>, ino: u64, _flags: i32, reply: fuser::ReplyOpen) {
+        if self.verbose {
+            println!("SquashfsFilesystem::opendir()");
+        }
         if let Some(node) = self.node_from_ino(ino as usize) {
             if let InnerNode::Dir(_) = node.inner {
                 reply.opened(0, 0)
@@ -134,6 +148,9 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
         offset: i64,
         mut reply: fuser::ReplyDirectory,
     ) {
+        if self.verbose {
+            println!("SquashfsFilesystem::readdir()");
+        }
         if let Some(node) = self.node_from_ino(ino as usize) {
             if let InnerNode::Dir(_) = node.inner {
                 for (i, (child_ino, _)) in self
