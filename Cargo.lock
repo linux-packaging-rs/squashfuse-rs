@@ -329,7 +329,7 @@ checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 
 [[package]]
 name = "squashfuse-rs"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "backhand",
  "fuser",
