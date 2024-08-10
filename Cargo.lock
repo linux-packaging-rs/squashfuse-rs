@@ -240,6 +240,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mount_filesystem"
+version = "0.1.0"
+dependencies = [
+ "backhand",
+ "fuser",
+ "libc",
+ "squashfuse-rs",
+ "thiserror",
+]
+
+[[package]]
 name = "no_std_io"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

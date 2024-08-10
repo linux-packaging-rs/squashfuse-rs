@@ -6,6 +6,12 @@ use std::{
     process::Command,
 };
 
+fn cleanup(tmp_dir: &Path, out_dir: &Path) {
+    let _ = fs::remove_dir_all(tmp_dir.join("test_archive"));
+    let _ = fs::remove_dir_all(out_dir);
+    let _ = fs::remove_dir_all(Path::new("/tmp/.test_mount"));
+}
+
 fn create_archive(tmp_dir: &Path, out: &Path) -> Result<PathBuf, String> {
     if let Err(e) = create_dir(tmp_dir.join("test_archive")) {
         return Err(e.to_string());
@@ -54,21 +60,17 @@ fn create_archive(tmp_dir: &Path, out: &Path) -> Result<PathBuf, String> {
     }
 }
 
-#[test]
-fn mount_filesystem() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let tmp_dir = std::env::current_dir().unwrap();
     let out_dir = std::env::current_dir().unwrap().join("out");
+    cleanup(&tmp_dir, &out_dir);
     match mount_filesystem_inner(&tmp_dir, &out_dir) {
         Ok(()) => {
-            let _ = fs::remove_dir_all(tmp_dir.join("test_archive"));
-            let _ = fs::remove_dir_all(out_dir);
-            let _ = fs::remove_dir_all(Path::new("/tmp/.test_mount"));
+            cleanup(&tmp_dir, &out_dir);
             Ok(())
         }
         Err(e) => {
-            let _ = fs::remove_dir_all(tmp_dir.join("test_archive"));
-            let _ = fs::remove_dir_all(out_dir);
-            let _ = fs::remove_dir_all(Path::new("/tmp/.test_mount"));
+            cleanup(&tmp_dir, &out_dir);
             Err(e)
         }
     }

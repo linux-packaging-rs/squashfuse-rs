@@ -1,0 +1,13 @@
+[package]
+name = "mount_filesystem"
+version = "0.1.0"
+authors = ["Ryan Brue <ryanbrue@gmail.com>"]
+edition = "2021"
+publish = false
+
+[dependencies]
+backhand.workspace = true
+fuser.workspace = true
+libc.workspace = true
+thiserror.workspace = true
+squashfuse-rs.workspace = true

@@ -76,7 +76,32 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
                             },
                         )
                     }
-                    _ => panic!("This code shouldn't be reached"),
+                    InnerNode::Dir(dir) => {
+                        reply.attr(
+                            &Duration::from_secs(1),
+                            &fuser::FileAttr {
+                                ino,
+                                size: 0,
+                                blocks: 0,
+                                atime: UNIX_EPOCH,
+                                mtime: UNIX_EPOCH, // node.header.mtime
+                                ctime: UNIX_EPOCH,
+                                crtime: UNIX_EPOCH,
+                                kind: fuser::FileType::RegularFile,
+                                perm: node.header.permissions,
+                                nlink: 1,
+                                uid: node.header.uid,
+                                gid: node.header.gid,
+                                rdev: 0,
+                                flags: 0,
+                                blksize: 512,
+                            },
+                        )
+                    }
+                    _ => panic!(
+                        "This code shouldn't be reached. Received type {:?}",
+                        node.inner
+                    ),
                 }
             }
             None => reply.error(libc::ENOENT),
