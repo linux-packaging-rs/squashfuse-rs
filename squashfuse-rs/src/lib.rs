@@ -81,8 +81,8 @@ impl<'a> fuser::Filesystem for SquashfsFilesystem<'a> {
                             &Duration::from_secs(1),
                             &fuser::FileAttr {
                                 ino,
-                                size: 0,
-                                blocks: 0,
+                                size: 32,
+                                blocks: 1,
                                 atime: UNIX_EPOCH,
                                 mtime: UNIX_EPOCH, // node.header.mtime
                                 ctime: UNIX_EPOCH,
